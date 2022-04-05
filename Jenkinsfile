@@ -1,6 +1,6 @@
 @Library('DevOpsLib') _
 
-import com.seowork.libs.jenkins.TelegramMessage
+import libs.jenkins.TelegramMessage
 
 String TG_CHAT_ID = "ID"
 String TG_BOT_ID  = "ID"
@@ -31,7 +31,7 @@ node('selenium0'){
             '''
         }
 
-    stage('Run tests')
+    stage('Run Selenium tests')
         {
             try {
                 sh """
