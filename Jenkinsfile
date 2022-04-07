@@ -1,5 +1,3 @@
-@Library('DevOpsLib') _
-
 import libs.jenkins.TelegramMessage
 
 String TG_CHAT_ID = "ID"
