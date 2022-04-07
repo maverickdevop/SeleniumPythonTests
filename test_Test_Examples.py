@@ -43,12 +43,14 @@ class TestExamples(unittest.TestCase):
         }
 
         # Path To Drivers
-        
+        # Driver on Local machine
         s = Service("./drivers/chromedriver")
         driver = webdriver.Chrome(service=s)
 
         # Jenkins Server with capabilities
         driver = webdriver.Remote(command_executor="http://localhost:4444/wd/hub", desired_capabilities=capabilities)
+        # Or Remote Driver
+        WebDriver driver = new RemoteWebDriver(new URL("https://" + username + ":" + accesskey + "@hub.lambdatest.com/wd/hub"),
         
       
     # LogIn to Personal Profile
@@ -207,7 +209,7 @@ class TestExamples(unittest.TestCase):
     @classmethod
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.story('Chech how to put data manually in selectors')
-    def test_3_Input_Data_Manually(cls):
+    def test_4_Input_Data_Manually(cls):
 
         try:
             # Wait till element (Data selecor) loaded on page
@@ -250,7 +252,7 @@ class TestExamples(unittest.TestCase):
     @classmethod
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.story('How to perform on howers and check for buttons are enabled')
-    def test_4_HoversButtons_And_Buttons(cls):
+    def test_5_HoversButtons_And_Buttons(cls):
 
         try:
             # Try to find hover icon / hint marker
@@ -273,6 +275,88 @@ class TestExamples(unittest.TestCase):
                 file.write('hovers and button not working properly!\n')
                 assert False, allure.attach(driver.get_screenshot_as_png(), name="HoversButtons",
                                             attachment_type=AttachmentType.PNG)
+    # Check Access to the Page
+    # Go to URL -> Wait for 10 seconds error message not located on page
+    @classmethod
+    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.story('Access Page Test')
+    def test_6_Page_Access(cls):
+
+        try:
+                # Capture CSS_SELECTOR as VUE.JS error
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, '.vue-notassertication-template.vue-notassertication.error')))
+
+                with open('log.txt', 'a+') as file:
+                    file.write('No access to the page!\n')
+                assert_raises(TimeoutException), f'Error message was shown!'
+                allure.attach(driver.get_screenshot_as_png(), name="NoAccessToPage",
+                              attachment_type=AttachmentType.PNG)
+                return False
+
+            except:
+                return True
+    
+    # This test determines if a list is unique and not repeated
+    # Get to page -> Get list of task-list with date of creation -> Assert for unique in loop
+    @classmethod
+    @allure.severity(allure.severity_level.MINOR)
+    @allure.story('Task TaskTime Unique')
+    def test_7_Task_TaskTime_Unique(cls):
+
+        # Get to oage with limits
+        driver.get(BASE + '?limit=10')
+
+        # Variable for dates of 10 elems
+        the_dates = driver.find_elements(By.CLASS_NAME, 'task-item__subcontent')
+        
+        dates = []
+
+        for date in the_dates:
+            dates.append(date.get_attribute('innerText'))
+
+        def array_date():
+
+            if [dates[0]] * len(dates) != dates:
+                pass
+            else:
+                with open('log.txt', 'a+') as file:
+                    file.write('Task TaskTime  isnt Unique!\n')
+                allure.attach(driver.get_screenshot_as_png(), name="UniqueTaskDates",
+                              attachment_type=AttachmentType.PNG)
+    
+    # This test shows how to handle with windows of webdriver
+    # Get to page -> Find button [On 1st window] -> Click -> Test [On 2nd window] -> Close [2nd window] -> Return back [On 1st window]
+    @classmethod
+    @allure.severity(allure.severity_level.MINOR)
+    @allure.story('Handles')
+    def test_8_Handles(cls):
+
+        article_button = driver.find_element(By.XPATH, '//*[@id="article-btn"]')
+        driver.execute_script("arguments[0].click();", article_button)
+                                       
+        def hande():
+                                               
+            # Habdle window
+            handles = driver.window_handles
+            driver.switch_to.window(handles[1])
+            time.sleep(2)
+
+            article = 'articles/2444259'
+            
+            try:
+                assert article in driver.current_url()
+                                               
+            except (AssertionError, NoSuchElementException, TimeoutException):
+                    with open('log.txt', 'a+') as file:
+                        file.write('Wrond test in handle!')
+                        assert False, allure.attach(driver.get_screenshot_as_png(), name="WrongArticlePage",
+                                  attachment_type=AttachmentType.PNG)
+             # Close 2nd window
+            driver.close()
+
+            # Back to 1st window
+            driver.switch_to.window(handles[0])
 
     @classmethod
     def tearDownClass(cls):
