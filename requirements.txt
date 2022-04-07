@@ -1,12 +1,7 @@
 allure-pytest==2.9.45
 allure-python-commons==2.9.45
 Appium-Python-Client==1.0.2
-cryptography==35.0.0
-decorator==5.1.0
 html-testRunner==1.2.1
-importlib-metadata==4.8.2
-nose==1.3.7
-packaging==21.2
 pip==21.3.1
 pluggy==1.0.0
 py==1.11.0
