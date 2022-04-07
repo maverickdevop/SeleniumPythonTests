@@ -345,7 +345,7 @@ class TestExamples(unittest.TestCase):
             article = 'articles/2444259'
             
             try:
-                assert article in driver.current_url()
+                assert article in driver.current_url
                                                
             except (AssertionError, NoSuchElementException, TimeoutException):
                     with open('log.txt', 'a+') as file:
