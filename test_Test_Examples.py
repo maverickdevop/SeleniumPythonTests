@@ -30,8 +30,8 @@ class TestExamples(unittest.TestCase):
         # Global variables for tests
         global driver, BASE, PAGE
 
-        BASE = 'https://seowork.ru'
-        PAGE = 'https://spa.seowork.ru/competitors/stats/6542'
+        BASE = 'https://hostsite.ru'
+        PAGE = 'https://hostpage/page.ru'
 
         capabilities = {
             "browserName": "chrome",
@@ -43,32 +43,31 @@ class TestExamples(unittest.TestCase):
         }
 
         # Path To Drivers
-
-        # Windows
-        driver = webdriver.Chrome("./drivers/chromedriver_win.exe")
-
-        # Mac OS
+        
         s = Service("./drivers/chromedriver")
         driver = webdriver.Chrome(service=s)
 
         # Jenkins Server with capabilities
         driver = webdriver.Remote(command_executor="http://localhost:4444/wd/hub", desired_capabilities=capabilities)
-
-        driver.maximize_window()
-        driver.implicitly_wait(30)
-
-        # LogIn to Personal Profile
-
+        
+      
+    # LogIn to Personal Profile
+    @classmethod
+    def LogIn(cls):
+        
+        # Get to site
         driver.get(BASE)
-        driver.find_element(By.XPATH, "/html/body/div[1]/div[1]/header/div/div[2]/div/div/div/div[2]/a").click()
+        driver.maximize_window()
+        
+        # Wait untill Login button us loaded
+        WebDriverWait(driver, 360).until(
+            EC.presence_of_element_located((By.XPATH, "//a[contains(@href,'/login')]"))).click()
+        
+        # Set Login-Pass
         driver.find_element(By.NAME, "WorkLoginForm[login]").send_keys('LOGIN')
         driver.find_element(By.NAME, "WorkLoginForm[password]").send_keys('PASSWORD')
         driver.find_element(By.XPATH, "//button[@type='submit']").click()
-        driver.get(PAGE)
-
-        # Wait untill Page is loaded
-        WebDriverWait(driver, 360).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "pagination-status")))
+        
 
     # Fast Filters Block (Period)
     # Example: 1) Click to sort buttons 2) Check URL parameters 3) If something wrong asserterror with Allure screenshot
@@ -76,6 +75,12 @@ class TestExamples(unittest.TestCase):
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.story('Filter description 1')
     def test_1_Fast_Filters_Grown_Leaders(cls):
+        
+        driver.get(PAGE)
+
+        # Wait untill Page is loaded
+        WebDriverWait(driver, 360).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "pagination-status")))
 
         driver.execute_script("arguments[0].click();", cls.data())
 
@@ -86,10 +91,10 @@ class TestExamples(unittest.TestCase):
             EC.presence_of_element_located((By.CLASS_NAME, "pagination-status")))
 
         try:
-            lead_grown = driver.find_element(By.XPATH, '//*[@id="competitors_stats_quick_filters"]/span[1]/span[1]/a')
-            driver.execute_script("arguments[0].click();", lead_grown)
+            var = driver.find_element(By.XPATH, '//*[@id="competitors_stats_quick_filters"]/span[1]/span[1]/a')
+            driver.execute_script("arguments[0].click();", var)
 
-            assert 'filter=growth_leaders&sort_metrica=ptraf_prc&sort_direction=DESC&sort_value=diff' in driver.current_url
+            assert 'text' in driver.current_url
 
         except (AssertionError, NoSuchElementException, TimeoutException):
             with open('log.txt', 'w') as file:
@@ -113,11 +118,11 @@ class TestExamples(unittest.TestCase):
             EC.presence_of_element_located((By.CLASS_NAME, "pagination-status")))
 
         try:
-            absolute_leaders = driver.find_element(By.XPATH,
+            var2 = driver.find_element(By.XPATH,
                                                    '//*[@id="competitors_stats_quick_filters"]/span[1]/span[1]/a')
-            driver.execute_script("arguments[0].click();", absolute_leaders)
+            driver.execute_script("arguments[0].click();", var2)
 
-            assert 'filter=absolute_leaders' in driver.current_url
+            assert 'text' in driver.current_url
 
         except (AssertionError, NoSuchElementException, TimeoutException):
             with open('log.txt', 'w') as file:
@@ -135,15 +140,16 @@ class TestExamples(unittest.TestCase):
     def test_3_Sorting_TOP(cls):
 
         driver.get(PAGE)
+        
         WebDriverWait(driver, 360).until(
             EC.presence_of_element_located((By.CLASS_NAME, "pagination-status")))
 
         try:
-            top_prc_desc = driver.find_element(By.XPATH,
+            var3 = driver.find_element(By.XPATH,
                                                "//div[@data-test='competitors_stats_sort_count']/div[@class='sort _margin __column']/div[1]")
-            driver.execute_script("arguments[0].click();", top_prc_desc)
+            driver.execute_script("arguments[0].click();", var3)
 
-            assert 'sort_metrica=count_prc&sort_direction=DESC&sort_value=value' in driver.current_url
+            assert 'text' in driver.current_url
 
             # Variable of object list with nums
             top_desc_list = driver.find_elements(By.XPATH, '//td[@data-test="competitors_stats_count_prc"]')
@@ -204,7 +210,6 @@ class TestExamples(unittest.TestCase):
     def test_3_Input_Data_Manually(cls):
 
         try:
-
             # Wait till element (Data selecor) loaded on page
             WebDriverWait(driver, 360).until(
             EC.presence_of_element_located(cls.data()))
