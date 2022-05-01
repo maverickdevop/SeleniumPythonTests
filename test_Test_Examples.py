@@ -268,7 +268,7 @@ class TestExamples(unittest.TestCase):
 
             button = driver.find_element_by_id('button_id')
 
-            assert button.is_displayed() and button.is_enabled
+            assert button.is_displayed() and button.is_enabled()
  
         except (AssertionError, NoSuchElementException, TimeoutException):
             with open('log.txt', 'w') as file:
